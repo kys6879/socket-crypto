@@ -70,5 +70,21 @@ unsigned WINAPI SendMsg(void* arg) {
 	return 0;
 }
 unsigned WINAPI RecvMsg(void* arg) {
+	SOCKET sock = *((SOCKET *)arg);
+	char nameMsg[NAME_SIZE + BUF_SIZE];
+	int strLen;
+	while (1) {
+		strLen = recv(sock, nameMsg, NAME_SIZE + BUF_SIZE - 1, 0);
+		if (strLen == -1)
+			return -1;
+		nameMsg[strLen] = 0;
+		if (!strcmp(nameMsg, "q")) {
+			printf("left the chat\n");
+			closesocket(sock);
+			exit(0);
+		}
+		fputs(nameMsg, stdout);
+	}
+	return 0;
 
 }
