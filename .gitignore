@@ -1,0 +1,11 @@
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+.vs/
+Debug/
+client/Debug/
+server/Debug/
+
+.vs/socket-crypto/v15/Browse.VC.opendb
