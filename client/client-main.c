@@ -45,14 +45,17 @@ int main() {
 	
 	hSocket = socket_env_ready(PORT, ADDRESS);
 
+	printf("성공\n");
 	sendThread = (HANDLE)_beginthreadex(NULL, 0, SendMsg, (void*)&hSocket, 0, NULL);//메시지 전송용 쓰레드가 실행된다.
 	recvThread = (HANDLE)_beginthreadex(NULL, 0, RecvMsg, (void*)&hSocket, 0, NULL);//메시지 수신용 쓰레드가 실행된다.
 
+	WaitForSingleObject(sendThread, INFINITE);
+	WaitForSingleObject(recvThread, INFINITE);
 
 	closesocket(hSocket); //소켓 라이브러리 해제
 	WSACleanup();
-
 	system("pause");
+
 	return 0;
 }
 
