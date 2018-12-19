@@ -16,8 +16,10 @@
 #define BUF_SIZE 100
 #define NAME_SIZE 20
 
+char name[NAME_SIZE] = "[DEFAULT]";
+
 char msg[BUF_SIZE];
-char inputName[NAME_SIZE];
+char inputName[100];
 
 unsigned WINAPI SendMsg(void* arg);
 unsigned WINAPI RecvMsg(void* arg);
@@ -38,7 +40,7 @@ int main() {
 
 	printf("Input your name : ");
 	gets(inputName);
-	sprintf(inputName, "[%s]", inputName);
+	sprintf(name, "[%s]", inputName);
 
 	
 	hSocket = socket_env_ready(PORT, ADDRESS);
@@ -52,4 +54,21 @@ int main() {
 
 	system("pause");
 	return 0;
+}
+
+unsigned WINAPI SendMsg(void* arg) {
+	SOCKET sock = *((SOCKET*)arg);
+	char nameMsg[NAME_SIZE + BUF_SIZE];
+	while (1) {
+		fgets(msg, BUF_SIZE, stdin);
+		if (strcmp(msg, "q\n")) {
+			send(sock, "q", 1, 0);
+		}
+		sprintf(nameMsg, "%s %s", name, msg);
+		send(sock, nameMsg, strlen(nameMsg), 0);
+	}
+	return 0;
+}
+unsigned WINAPI RecvMsg(void* arg) {
+
 }
