@@ -68,22 +68,6 @@ int main() {
 		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClient, (void*)&hClntSock, 0, NULL);
 
 		printf("Connected Client IP : %s\n", inet_ntoa(clntAddr.sin_addr));
-
-		FILE *fp = fopen("msg.txt", "a");
-
-		recv(hClntSock, r_msg, sizeof(r_msg), 0);
-
-		hash_sha256(r_msg, encrypt);
-
-		for (i = 0; i < 32; i++) {
-			fprintf(fp,"%02x", encrypt[i]);
-		}
-		fprintf(fp, "\n");
-	
-		//fputs(r_msg, fp);   // 파일에 문자열 저장
-		fclose(fp);
-
-		printf("전달받은 문자열 : %s\n", r_msg);
 	}
 
 	closesocket(hServSock);
