@@ -84,14 +84,18 @@ unsigned WINAPI HandleClient(void* arg) {
 	int strLen = 0, i;
 	char msg[BUF_SIZE];
 
-	while ((strLen = recv(clientSock, msg, sizeof(msg), 0)) != 0) {
-
+	while ((strLen = recv(clientSock, msg, sizeof(msg), 0)) != -1) {
+		printf("strLen : %d\n", strLen);
 		if (!strcmp(msg, "q")) {
 			send(clientSock, "q", 1, 0);
 			break;
 		}
+		printf("접근1");
 		SendMsg(msg, strLen);//SendMsg에 받은 메시지를 전달한다.
+		printf("접근5");
 	}
+
+	printf("접근10");
 	WaitForSingleObject(hMutex, INFINITE);
 	for (i = 0; i < clientCount; i++) {
 		if (clientSock == clientSocks[i]) {
@@ -108,12 +112,15 @@ unsigned WINAPI HandleClient(void* arg) {
 }
 
 void SendMsg(char* msg, int len) {
+	printf("접근2");
 	int i;
 	WaitForSingleObject(hMutex, INFINITE);
 	for (i = 0; i < clientCount; i++) {
 		send(clientSocks[i], msg, len, 0);
 	}
+	printf("접근3");
 	ReleaseMutex(hMutex);
+	printf("접근4");
 }
 
 void cli_conn_notification() {
