@@ -17,7 +17,7 @@
 #include "hash.h"
 
 #define PORT 3000
-#define BUF_SIZE 100
+#define BUF_SIZE 120
 #define MAX_CLI 5
 
 void cli_conn_notification();
@@ -65,7 +65,8 @@ int main() {
 			cli_conn_notification();
 		}
 		WaitForSingleObject(hMutex, INFINITE);
-		clientSocks[clientCount++] = szClntAddr;
+		clientSocks[clientCount++] = hClntSock;
+
 		ReleaseMutex(hMutex);
 		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClient, (void*)&hClntSock, 0, NULL);
 
@@ -84,7 +85,12 @@ unsigned WINAPI HandleClient(void* arg) {
 	char msg[BUF_SIZE];
 
 	while ((strLen = recv(clientSock, msg, sizeof(msg), 0)) != 0) {
-		// need to write sendMsg func 
+
+		if (!strcmp(msg, "q")) {
+			send(clientSock, "q", 1, 0);
+			break;
+		}
+		SendMsg(msg, strLen);//SendMsg에 받은 메시지를 전달한다.
 	}
 	WaitForSingleObject(hMutex, INFINITE);
 	for (i = 0; i < clientCount; i++) {

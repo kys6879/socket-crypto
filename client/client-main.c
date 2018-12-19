@@ -64,7 +64,8 @@ unsigned WINAPI SendMsg(void* arg) {
 	char nameMsg[NAME_SIZE + BUF_SIZE];
 	while (1) {
 		fgets(msg, BUF_SIZE, stdin);
-		if (strcmp(msg, "q\n")) {
+		if (!strcmp(msg, "q\n")) {
+			printf("df");
 			send(sock, "q", 1, 0);
 		}
 		sprintf(nameMsg, "%s %s", name, msg);
@@ -78,8 +79,10 @@ unsigned WINAPI RecvMsg(void* arg) {
 	int strLen;
 	while (1) {
 		strLen = recv(sock, nameMsg, NAME_SIZE + BUF_SIZE - 1, 0);
-		if (strLen == -1)
+		if (strLen == -1) {
 			return -1;
+		}
+
 		nameMsg[strLen] = 0;
 		if (!strcmp(nameMsg, "q")) {
 			printf("left the chat\n");
