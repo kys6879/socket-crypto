@@ -20,9 +20,11 @@
 #define MAX_CLI 5
 
 void cli_conn_notification();
+unsigned WINAPI HandleClient(void* arg);
 
 int clientCount = 0;
-
+SOCKET clientSocks[MAX_CLI];
+HANDLE hMutex;
 
 int main() {
 	
@@ -43,11 +45,12 @@ int main() {
 	uint8_t cli_pub[ECC_BYTES + 1];
 	uint8_t cli_pri[ECC_BYTES];
 
+	HANDLE hThread;
 
 	printf("PORT : %d\n", PORT);
 	print_parameter(ECC_CURVE);
 
-	hServSock = socket_env_ready(PORT);
+	hServSock = socket_env_ready(PORT, &hMutex);
 
 
 	while (1) {
@@ -59,6 +62,12 @@ int main() {
 		}else {
 			cli_conn_notification();
 		}
+		WaitForSingleObject(hMutex, INFINITE);
+		clientSocks[clientCount++] = szClntAddr;
+		ReleaseMutex(hMutex);
+		hThread = (HANDLE)_beginthreadex(NULL, 0, HandleClient, (void*)&hClntSock, 0, NULL);
+
+		printf("Connected Client IP : %s\n", inet_ntoa(clntAddr.sin_addr));
 
 		FILE *fp = fopen("msg.txt", "a");
 
@@ -75,9 +84,34 @@ int main() {
 		fclose(fp);
 
 		printf("전달받은 문자열 : %s\n", r_msg);
-		
 	}
 
+	closesocket(hServSock);
+	WSACleanup();
+
+	return 0;
+}
+
+unsigned WINAPI HandleClient(void* arg) {
+	SOCKET clientSock = *((SOCKET*)arg);
+	int strLen = 0, i;
+	char msg[BUF_SIZE];
+
+	while ((strLen = recv(clientSock, msg, sizeof(msg), 0)) != 0) {
+		// need to write sendMsg func 
+	}
+	WaitForSingleObject(hMutex, INFINITE);
+	for (i = 0; i < clientCount; i++) {
+		if (clientSock == clientSocks[i]) {
+			while (i++ < clientCount - 1) {
+				clientSocks[i] = clientSocks[i + 1];
+			}
+			break;
+		}
+	}
+	clientCount--;
+	ReleaseMutex(hMutex);
+	closesocket(clientSock);
 	return 0;
 }
 

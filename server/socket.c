@@ -36,7 +36,7 @@ SOCKET Accept(SOCKET hServSock, SOCKADDR_IN clntAddr) {
 }
 
 
-SOCKET socket_env_ready(int port) {
+SOCKET socket_env_ready(int port,HANDLE *hMutex) {
 	int errCode;
 	WSADATA wsaData;
 	SOCKADDR_IN servAddr;
@@ -46,6 +46,10 @@ SOCKET socket_env_ready(int port) {
 	if (errCode) {
 		ErrorHandling("InitSocket() error!");
 	}
+
+	*hMutex = CreateMutex(NULL, FALSE, NULL);
+
+
 
 	hServSock = Create(); // Create
 	if (hServSock == INVALID_SOCKET) {

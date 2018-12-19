@@ -12,5 +12,5 @@ int Listen(SOCKET hServSock);
 
 SOCKET Accept(SOCKET hServSock, SOCKADDR_IN clntAddr);
 
-SOCKET socket_env_ready(int port);
+SOCKET socket_env_ready(int port, HANDLE *hMutex);
 #endif
