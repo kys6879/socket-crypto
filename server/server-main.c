@@ -21,6 +21,7 @@
 
 void cli_conn_notification();
 unsigned WINAPI HandleClient(void* arg);
+void SendMsg(char* msg, int len);
 
 int clientCount = 0;
 SOCKET clientSocks[MAX_CLI];
@@ -97,6 +98,15 @@ unsigned WINAPI HandleClient(void* arg) {
 	ReleaseMutex(hMutex);
 	closesocket(clientSock);
 	return 0;
+}
+
+void SendMsg(char* msg, int len) {
+	int i;
+	WaitForSingleObject(hMutex, INFINITE);
+	for (i = 0; i < clientCount; i++) {
+		send(clientSocks[i], msg, len, 0);
+	}
+	ReleaseMutex(hMutex);
 }
 
 void cli_conn_notification() {
